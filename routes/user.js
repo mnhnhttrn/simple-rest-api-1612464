@@ -8,23 +8,46 @@ const JWT_SECRET = require('../config').JWT_SECRET
 // POST register
 router.post('/register', function (req, res, next) {
     console.log(req.body)
-    const info = req.body
-    console.log(req.body.Username)
-    if (info.Username === "" || info.Password === "") {
+    let info = req.body
+    console.log(req.body.username)
+    if (info.username === "" || info.password === "") {
         res.status(400).json({
             message: "Username or Password is invalid"
         })
     }
-    userModel.findOne(info.Username).then(users => {
+    if (!info.avatarURL) {
+        info.avatarURL = ""
+    }
+    userModel.findOne(info.username).then(users => {
         if (users.length) {
             res.status(400).json({
                 message: "Username exists"
             })
         }
-        userModel.createAccount(info.Username, info.Password).then(ret => {
-            res.json({
-                message: "Successfully created",
-                accountID: ret
+        userModel.createAccount(info.username, info.password, info.avatarURL).then(uid => {
+            userModel.findOneByID(uid).then(users => {
+                if (users.length) {
+                    const user = {
+                        id: users[0].account_id,
+                        username: users[0].account_username,
+                        avatarURL: users[0].account_avatar
+                    }
+                    req.login(user, { session: false }, (err) => {
+                        if (err) {
+                            res.send(err);
+                        }
+                        // generate a signed son web token with the contents of user object and return it in the response
+                        const token = jwt.sign(user, JWT_SECRET);
+                        return res.status(200).json({
+                            message: "successfully created",
+                            token
+                        });
+                    });
+                } else {
+                    return res.status(500).json({
+                        message: "there is a problem while creating account"
+                    })
+                }
             })
         }).catch(err => {
             res.status(503).json({
@@ -40,18 +63,19 @@ router.post('/login', function (req, res, next) {
     passport.authenticate('local', { session: false }, (err, user, info) => {
         if (err || !user) {
             return res.status(400).json({
-                message: 'Something is not right',
-                user: user
+                message: info
             });
         }
         req.login(user, { session: false }, (err) => {
             if (err) {
-                res.send(err);
+                res.status(400).json({
+                    message: info
+                });
             }
             // generate a signed son web token with the contents of user object and return it in the response
             const token = jwt.sign(user, JWT_SECRET);
-            return res.json({
-                message: "successfully logged", 
+            return res.status(200).json({
+                message: "successfully logged",
                 token
             });
         });

@@ -1,14 +1,15 @@
 var passport = require('passport')
 var LocalStrategy = require('passport-local').Strategy
 var passportJWT = require("passport-jwt");
-var UserModel = require('./models/user')
+var UserModel = require('../models/user')
 var JWTStrategy = passportJWT.Strategy;
 var ExtractJWT = passportJWT.ExtractJwt;
-var config = require('./config')
+var config = require('../config')
+var bcrypt = require('bcrypt')
 
 passport.use(new LocalStrategy({
-    usernameField: 'Username',
-    passwordField: 'Password'
+    usernameField: 'username',
+    passwordField: 'password'
 },
     function (username, password, cb) {
         return UserModel.findOne(username)
@@ -25,7 +26,8 @@ passport.use(new LocalStrategy({
                 }
                 const ret = {
                     id: user.account_id, 
-                    username: user.account_username
+                    username: user.account_username,
+                    avatarURL: user.account_avatar
                 }
                 return cb(null, ret, { message: 'Logged In Successfully' });
             })
@@ -47,10 +49,7 @@ passport.use(new JWTStrategy({
                 if (!users[0]){
                     return cb(null, false);
                 }
-                const user = {
-                    id: users[0].account_id,
-                    username: users[0].account_username
-                }
+                const user = users[0]
                 return cb(null, user);
             })
             .catch(err => {
