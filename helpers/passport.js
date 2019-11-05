@@ -50,6 +50,7 @@ passport.use(new JWTStrategy({
                     return cb(null, false);
                 }
                 const user = users[0]
+                //console.log('user', user)
                 return cb(null, user);
             })
             .catch(err => {

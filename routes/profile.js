@@ -9,6 +9,7 @@ router.get('/', passport.authenticate('jwt',{session:false}), function(req, res,
     username: req.user.account_username,
     avatarURL: req.user.account_avatar ? req.user.account_avatar : "" 
   }
+  //console.log('get profile payload', profile)
   return res.status(200).json({
     message:"successfully logged",
     profilePayload: profile
@@ -18,7 +19,7 @@ router.get('/', passport.authenticate('jwt',{session:false}), function(req, res,
 // Update profile
 router.post('/', passport.authenticate('jwt',{session:false}), function(req,res,next) {
   const uid = req.user.account_id 
-  const {username, avatarURL} = req.body
+  const {username} = req.body
   userModel.findOne(username).then(users =>{
     if (users.length){
       if (users[0] && users[0].account_id !== id){
@@ -27,7 +28,7 @@ router.post('/', passport.authenticate('jwt',{session:false}), function(req,res,
         })
       }
     } else {
-      userModel.updateProfileByID(uid, username, avatarURL).then(()=>{
+      userModel.updateProfileByID(uid, username, req.user.account_avatar ? req.user.account_avatar : "").then(()=>{
         return res.status(200).json({
           message:"thông tin tài khoản đã được cập nhật thành công"
         })

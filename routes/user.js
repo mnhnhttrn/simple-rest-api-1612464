@@ -7,9 +7,9 @@ const JWT_SECRET = require('../config').JWT_SECRET
 
 // POST register
 router.post('/register', function (req, res, next) {
-    console.log(req.body)
+    //console.log(req.body)
     let info = req.body
-    console.log(req.body.username)
+    //console.log(req.body.username)
     if (info.username === "" || info.password === "") {
         res.status(400).json({
             message: "Username or Password is invalid"
@@ -59,7 +59,7 @@ router.post('/register', function (req, res, next) {
 });
 /* POST login. */
 router.post('/login', function (req, res, next) {
-    console.log(req.body)
+    //console.log(req.body)
     passport.authenticate('local', { session: false }, (err, user, info) => {
         if (err || !user) {
             return res.status(400).json({
