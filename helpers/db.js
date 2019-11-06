@@ -1,12 +1,22 @@
 const mysql = require('mysql')
 
+// var createConnection = () => {
+//     return mysql.createConnection({
+//         host: 'localhost',
+//         port: 3306,
+//         user: 'dev',
+//         password: 'password',
+//         database: 'week6restfulapidb'
+//     });
+// }
+
 var createConnection = () => {
     return mysql.createConnection({
-        host: 'localhost',
+        host: '85.10.205.173',
         port: 3306,
-        user: 'dev',
-        password: 'password',
-        database: 'week6restfulapidb'
+        user: 'nhat464',
+        password: '123456777',
+        database: 'srest1612464'
     });
 }
 

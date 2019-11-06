@@ -22,7 +22,7 @@ app.set('port', port);
 var server = http.createServer(app);
 
 //socketio
-require('../socket')(server);
+require('../socket/socket')(server);
 
 
 /**

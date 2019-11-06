@@ -5,6 +5,13 @@ var userModel = require('../models/user')
 
 /* GET users listing. */
 router.get('/', passport.authenticate('jwt',{session:false}), function(req, res, next) {
+  console.log('get profile user', req.user)
+  if(req.user.type === 'facebook'){
+    return res.status(200).json({
+      message:'successfully logged',
+      profilePayload: req.user  
+    })
+  }
   const profile = {
     username: req.user.account_username,
     avatarURL: req.user.account_avatar ? req.user.account_avatar : "" 
